@@ -173,6 +173,7 @@ jobs:
 
       - name: Build source code
         run: |
+          npm ci --only=prod
           zip -r ${ZIP_FILE_NAME} ./* -x *.zip
           ls
 
