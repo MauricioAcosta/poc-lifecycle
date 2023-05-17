@@ -175,7 +175,7 @@ jobs:
 
       - name: Build source code
         run: |
-          zip -r ${LAMBDA_FUNCTION_NAME}.zip node_modules static build index.js package.json
+          zip -r ${ZIP_FILE_NAME} ./* -x *.zip
           ls
 
       - name: Deploy Lambda function
