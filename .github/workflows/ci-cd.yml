@@ -139,8 +139,6 @@ jobs:
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.python.coverage.reportPaths=coverage/lcov.info
             -Dsonar.javascript.tslint.configPath=tslint.json
-            -Dsonar.coverage.exclusions=**/*.spec.ts
-            -Dsonar.exclusions=**/node_modules/**,**/assets/**,**/*.spec.ts
             -Dsonar.test.inclusions=**/*.spec.ts
 
   deploy-develop:
