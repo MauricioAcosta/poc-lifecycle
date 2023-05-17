@@ -105,14 +105,14 @@ jobs:
     name: SonarCloud
     runs-on: ubuntu-20.04
     needs: [build, test]
-    uses: actions/download-artifact@v2
-        with:
-          name: coverage
-          path: coverage
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0 
+      - uses: actions/download-artifact@v2
+        with:
+          name: coverage
+          path: coverage
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
