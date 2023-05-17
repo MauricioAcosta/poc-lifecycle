@@ -175,9 +175,8 @@ jobs:
 
       - name: Build source code
         run: |
-          npm install
-          npm run build
-          zip -r ${ZIP_FILE_NAME}.zip node_modules static build index.js package.json
+          zip -r ${LAMBDA_FUNCTION_NAME}.zip node_modules static build index.js package.json
+          ls
 
       - name: Deploy Lambda function
         run: |
@@ -193,3 +192,4 @@ jobs:
       - name: Clean up
         run: |
           rm ${ZIP_FILE_NAME}
+          ls
