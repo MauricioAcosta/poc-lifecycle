@@ -135,7 +135,6 @@ jobs:
             -Dsonar.organization=mauricioacosta
             -Dsonar.projectKey=MauricioAcosta_poc-lifecycle
             -Dsonar.language=ts
-            -Dsonar.sources=src
             -Dsonar.sourceEncoding=UTF-8
             -Dsonar.python.coverage.reportPaths=coverage/lcov.info
             -Dsonar.javascript.tslint.configPath=tslint.json
