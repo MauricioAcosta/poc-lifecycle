@@ -108,20 +108,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
-      - name: Current Branch
-        shell: bash
-        id: long-lived-branch
-        run: |
-          CURRENT_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
-          if [ "$CURRENT_BRANCH" != "master" ] && [ "$CURRENT_BRANCH" != "stage" ] && [ "$CURRENT_BRANCH" != "develop" ]
-          then
-            CURRENT_BRANCH="develop"
-          fi
-          echo "##[set-output name=branch;]$(echo ${CURRENT_BRANCH})"
-          echo "Sonar Branch report => " ${CURRENT_BRANCH}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
