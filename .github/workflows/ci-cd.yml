@@ -180,7 +180,7 @@ jobs:
 
       - name: Deploy Lambda function
         run: |
-          aws lambda update-function-code \
+          aws lambda create-function \
             --region ${AWS_REGION} \
             --function-name ${LAMBDA_FUNCTION_NAME} \
             --zip-file fileb://${ZIP_FILE_NAME} \
