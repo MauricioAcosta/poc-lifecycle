@@ -118,3 +118,38 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  
+  deploy-develop:
+    name: deploy
+    runs-on: ubuntu-20.04
+    needs: [build, install-prod-dependencies]
+    steps:
+      - name: Checkout code
+      - uses: actions/checkout@v2
+      - name: Restore Data
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: build
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Restore or save cache for prod Dependencies
+        uses: actions/cache@v2
+        env:
+          cache-name: npm-node-modules-prod
+        with:
+          path: node_modules
+          key: npm-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}-prod
+      - run: ls
+      - name: Prepare files
+        shell: bash
+        id: Prepare-files
+        run: |
+          cp lambda/index.js index.js
+      - name: Deploy Lambda
+        run: npm run deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

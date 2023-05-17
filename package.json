@@ -25,9 +25,12 @@
     "coverage:report": "nyc report --reporter=lcov --reporter=text",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "lint:fix": "npm run lint -- --fix",
-    "clean": "rm -rf .nyc_output coverage build .scannerwork performance/*.clinic-doctor*"
+    "clean": "rm -rf .nyc_output coverage build .scannerwork performance/*.clinic-doctor*",
+    "deploy": "serverless deploy"
   },
   "dependencies": {
+    "aws-sdk": "^2.1379.0",
+    "aws-serverless-express": "^3.4.0",
     "body-parser": "^1.19.1",
     "cookie-parser": "^1.4.6",
     "express": "^4.17.1",
@@ -58,6 +61,7 @@
     "nodemon": "^2.0.12",
     "nyc": "^15.1.0",
     "prettier": "^2.8.8",
+    "serverless": "^3.30.1",
     "sinon": "^15.0.4",
     "sonarqube-scanner": "^3.0.1",
     "ts-loader": "^9.4.2",

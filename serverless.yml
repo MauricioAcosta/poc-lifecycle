@@ -1,0 +1,12 @@
+service: poc-lifecycle-develop
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+functions:
+  poc-lifecycle-develop:
+    files-to-compress: "node_modules assets static build index.js package.json"
+    handler: index.handler
+    description: My Lambda function
+    memorySize: 128
+    timeout: 5
