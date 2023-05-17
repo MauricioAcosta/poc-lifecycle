@@ -11,8 +11,34 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   LAMBDA_FUNCTION_NAME: poc-lifecycle-develop
   ZIP_FILE_NAME: my-lambda-function.zip
+  CACHE_NAME: poc-lifecycle-develop
 
 jobs:
+
+  install-prod-dependencies:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18.x
+      - name: Restore or save cache for prod Dependencies
+        uses: actions/cache@v2
+        env:
+          cache-name: npm-node-modules-prod
+        with:
+          path: node_modules
+          key: npm-${{ env.CACHE_NAME }}-${{ hashFiles('**/package.json') }}-prod
+      - run: ls
+      - name: Install Dependencies
+        run: |
+          if [ -d "node_modules" ]; then
+            echo 'Dependencies already exists!'
+          else
+            npm ci --only=prod
+          fi
+
   install-dev-dependencies:
     runs-on: ubuntu-20.04
     steps:
@@ -27,7 +53,7 @@ jobs:
           cache-name: npm-node-modules-dev
         with:
           path: node_modules
-          key: npm-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}-dev
+          key: npm-${{ env.CACHE_NAME }}-${{ hashFiles('**/package.json') }}-dev
       - name: Install Dependencies
         run: |
           if [ -d "node_modules" ]; then
@@ -50,7 +76,7 @@ jobs:
           cache-name: npm-node-modules-dev
         with:
           path: node_modules
-          key: npm-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}-dev
+          key: npm-${{ env.CACHE_NAME }}-${{ hashFiles('**/package.json') }}-dev
       - name: Install Dependencies
         run: |
           npm run build
@@ -59,30 +85,6 @@ jobs:
         with:
           name: build
           path: build
-
-  install-prod-dependencies:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 18.x
-      - name: Restore or save cache for prod Dependencies
-        uses: actions/cache@v2
-        env:
-          cache-name: npm-node-modules-prod
-        with:
-          path: node_modules
-          key: npm-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}-prod
-      - run: ls
-      - name: Install Dependencies
-        run: |
-          if [ -d "node_modules" ]; then
-            echo 'Dependencies already exists!'
-          else
-            npm ci --only=prod
-          fi
 
   test:
     runs-on: ubuntu-20.04
@@ -99,7 +101,7 @@ jobs:
           cache-name: npm-node-modules-dev
         with:
           path: node_modules
-          key: npm-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}-dev
+          key: npm-${{ env.CACHE_NAME }}-${{ hashFiles('**/package.json') }}-dev
       - name: Running Linter
         run: npm run lint
       - name: Running Test
@@ -150,7 +152,7 @@ jobs:
           cache-name: npm-node-modules-prod
         with:
           path: node_modules
-          key: npm-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}-prod
+          key: npm-${{ env.CACHE_NAME }}-${{ hashFiles('**/package.json') }}-prod
       - run: ls
       - name: Prepare files
         shell: bash
