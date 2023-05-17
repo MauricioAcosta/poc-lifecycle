@@ -8,7 +8,7 @@ import exampleController from './controllers/example.controller';
 
 const app = express();
 const apiPath = config.API_PATH;
-const fullApiPath = `${apiPath}/V1/hello`;
+const fullApiPath = `${apiPath}`;
 
 app.use(logger('dev'));
 app.use(express.json());
