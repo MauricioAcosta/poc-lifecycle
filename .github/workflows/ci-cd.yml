@@ -4,6 +4,17 @@ on:
   push:
     branches: [develop, stage, master, feature/*]
 
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  LAMBDA_FUNCTION_NAME: poc-lifecycle-develop
+  LAMBDA_HANDLER: index.handler
+  LAMBDA_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-lambda-role
+  LAMBDA_RUNTIME: nodejs18.x
+  ZIP_FILE_NAME: my-lambda-function.zip
+
 jobs:
   install-dev-dependencies:
     runs-on: ubuntu-20.04
@@ -51,6 +62,7 @@ jobs:
         with:
           name: build
           path: build
+
   install-prod-dependencies:
     runs-on: ubuntu-20.04
     steps:
@@ -74,6 +86,7 @@ jobs:
           else
             npm ci --only=prod
           fi
+
   test:
     runs-on: ubuntu-20.04
     needs: install-dev-dependencies
@@ -118,13 +131,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  
+
   deploy-develop:
-    name: deploy
     runs-on: ubuntu-20.04
-    needs: [build, install-prod-dependencies]
+    if: github.ref == 'refs/heads/deploy' || contains(github.ref, 'feature')
+    needs: [install-prod-dependencies, build]
     steps:
-      - name: Checkout code
       - uses: actions/checkout@v2
       - name: Restore Data
         uses: actions/download-artifact@v2
@@ -148,8 +160,37 @@ jobs:
         id: Prepare-files
         run: |
           cp lambda/index.js index.js
-      - name: Deploy Lambda
-        run: npm run deploy
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Deploy Lambda Function
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install awscli
+
+      - name: Configure AWS credentials
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }} && aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }} && aws configure set default.region ${AWS_REGION}
+
+      - name: Build source code
+        run: |
+          npm install
+          npm run build
+          zip -r ${ZIP_FILE_NAME}.zip node_modules static build index.js package.json
+
+      - name: Deploy Lambda function
+        run: |
+          aws lambda create-function \
+            --region ${AWS_REGION} \
+            --function-name ${LAMBDA_FUNCTION_NAME} \
+            --zip-file fileb://${ZIP_FILE_NAME} \
+            --handler ${LAMBDA_HANDLER} \
+            --runtime ${LAMBDA_RUNTIME} \
+            --role ${LAMBDA_ROLE_ARN} \
+            --environment "Variables={MY_ENV_VAR=foo}"
+
+      - name: Clean up
+        run: |
+          rm ${ZIP_FILE_NAME}
