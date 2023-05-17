@@ -134,7 +134,7 @@ jobs:
 
   deploy-develop:
     runs-on: ubuntu-20.04
-    if: github.ref == 'refs/heads/deploy' || contains(github.ref, 'feature')
+    if: github.ref == 'refs/heads/develop' || contains(github.ref, 'feature')
     needs: [install-prod-dependencies, build]
     steps:
       - uses: actions/checkout@v2
