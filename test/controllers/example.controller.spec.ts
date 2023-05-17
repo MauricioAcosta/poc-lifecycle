@@ -1,7 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import nock from 'nock';
-import app from '../../src/main';
+import app from '../../src/app';
 
 
 chai.use(chaiHttp);

@@ -34,7 +34,6 @@
     "cookie-parser": "^1.4.6",
     "express": "^4.17.1",
     "express-actuator": "^1.8.4",
-    "mongoose": "^7.1.1",
     "morgan": "^1.10.0",
     "uuidv4": "^6.2.13"
   },

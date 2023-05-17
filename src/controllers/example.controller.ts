@@ -3,7 +3,7 @@ import { uuid } from 'uuidv4';
 import exampleService from '../services/example.service';
 
 const exampleController = Router();
-const endpoint = '/';
+const endpoint = '/hello';
 exampleController.get(
   endpoint,
   async (request: Request, response: Response) => {
