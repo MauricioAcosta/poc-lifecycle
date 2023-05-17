@@ -132,7 +132,7 @@ jobs:
   deploy-develop:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/develop' || contains(github.ref, 'feature')
-    needs: [install-prod-dependencies, sonar]
+    needs: [install-prod-dependencies, sonarcloud]
     steps:
       - uses: actions/checkout@v2
       - name: Restore Data
