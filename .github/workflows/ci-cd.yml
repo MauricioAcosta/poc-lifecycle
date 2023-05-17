@@ -162,7 +162,6 @@ jobs:
           cp lambda/index.js index.js
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Deploy Lambda Function
       - name: Install AWS CLI
         run: |
           sudo apt-get update
