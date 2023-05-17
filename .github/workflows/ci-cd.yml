@@ -10,9 +10,6 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   LAMBDA_FUNCTION_NAME: poc-lifecycle-develop
-  LAMBDA_HANDLER: index.handler
-  LAMBDA_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-lambda-role
-  LAMBDA_RUNTIME: nodejs18.x
   ZIP_FILE_NAME: my-lambda-function.zip
 
 jobs:
@@ -135,7 +132,7 @@ jobs:
   deploy-develop:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/develop' || contains(github.ref, 'feature')
-    needs: [install-prod-dependencies, build]
+    needs: [install-prod-dependencies, sonar]
     steps:
       - uses: actions/checkout@v2
       - name: Restore Data
