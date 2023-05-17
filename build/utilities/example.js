@@ -1,10 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class exampleUtility {
-    constructor() { }
+class ExampleUtility {
     static async helloWork(UUID) {
-        return `${UUID}: hello world`;
+        return `${UUID}: hello world!`;
     }
 }
-exports.default = exampleUtility;
+exports.default = ExampleUtility;
 //# sourceMappingURL=example.js.map

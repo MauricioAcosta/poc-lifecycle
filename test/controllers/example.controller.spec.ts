@@ -17,7 +17,7 @@ describe('example Controller', () => {
     });
     it('Successful Request', (done) => {
         chai.request(app)
-            .get('/V1/hello/')
+            .get('/')
             .set({
                 'Content-Type': 'application/json',
             }).send()
