@@ -2,7 +2,7 @@ name: ci-cd
 
 on:
   push:
-    branches: [develop, stage, master, feature/*]
+    branches: [integracion, laboratorio, master, feature/*]
 
 env:
   AWS_REGION: us-east-1
@@ -163,7 +163,7 @@ jobs:
 
   deploy-develop:
     runs-on: ubuntu-20.04
-    if: (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/master')
+    if: (github.ref == 'refs/heads/integracion' || github.ref == 'refs/heads/laboratorio' || github.ref == 'refs/heads/master')
     needs: [install-prod-dependencies, sonarcloud]
     steps:
       - uses: actions/checkout@v3
