@@ -1,0 +1,38 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Your first API with Amazon API Gateway. This is a sample API that integrates via HTTP with our demo Pet Store endpoints",
+        "title": "PetStore"
+    },
+    "schemes": [
+        "https"
+    ],
+    "paths": {
+        "/V1/hello": {
+            "get": {
+                "summary": "Ejemplo de endpoint GET",
+                "responses": {
+                    "200": {
+                        "description": "Respuesta exitosa"
+                    }
+                }
+            }
+        }
+    },
+    "x-amazon-apigateway-documentation": {
+        "version": "v2.1",
+        "createdDate": "2016-11-17T07:03:59Z",
+        "documentationParts": [
+            {
+                "location": {
+                    "type": "API"
+                },
+                "properties": {
+                    "info": {
+                        "description": "Your first API with Amazon API Gateway. This is a sample API that integrates via HTTP with our demo Pet Store endpoints"
+                    }
+                }
+            }
+        ]
+    }
+}
