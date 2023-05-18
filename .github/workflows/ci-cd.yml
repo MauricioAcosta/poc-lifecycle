@@ -112,18 +112,27 @@ jobs:
           name: coverage
           path: coverage
 
-  sonarcloud:
-    name: SonarCloud
-    runs-on: ubuntu-latest
+  sonarcloud:    
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Run Tests with Coverage
+      run: npm run coverage:report
+    - name: SonarCloud Scan
+      uses: sonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   deploy-develop:
     runs-on: ubuntu-20.04
