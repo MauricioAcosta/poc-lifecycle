@@ -138,15 +138,24 @@ jobs:
           github.ref == 'refs/heads/master' ||
           github.ref == 'refs/heads/stage' ||
           github.ref == 'refs/heads/develop' ||
-          startsWith(github.ref, 'refs/heads/feature/')
-    - name: SonarCloud Quality Gate
-      uses: sonarSource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}          
+          startsWith(github.ref, 'refs/heads/feature/')      
       with:
         projectBaseDir: '.'
-        waitForQualityGate: 'true'
+    - name: Wait for SonarCloud Quality Gate
+      run: |
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+        TOKEN_SONAR_BASE64=${{ secrets.SONAR_TOKEN_BASE64 }}
+        status=""
+        until [[ "$status" == "SUCCESS" || "$status" == "ERROR" ]]; do
+          sleep 10
+          status=$(curl --location "https://sonarcloud.io/api/qualitygates/project_status?projectKey=MauricioAcosta_poc-lifecycle&branch=$CURRENT_BRANCH" \
+           --header "Authorization: Basic $TOKEN_SONAR_BASE64" | jq -r ".projectStatus.status")
+        done
+        
+        if [[ "$status" != "SUCCESS" ]]; then
+          echo "SonarCloud Quality Gate failed"
+          exit 1
+        fi
 
   deploy-develop:
     runs-on: ubuntu-20.04
