@@ -155,13 +155,13 @@ jobs:
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
         TOKEN_SONAR_BASE64=${{ secrets.SONAR_TOKEN_BASE64 }}
         status=""
-        until [[ "$status" == "SUCCESS" || "$status" == "ERROR" ]]; do
+        until [[ "$status" == "OK" || "$status" == "ERROR" ]]; do
           sleep 10
           status=$(curl --location "https://sonarcloud.io/api/qualitygates/project_status?projectKey=MauricioAcosta_poc-lifecycle&branch=$CURRENT_BRANCH" \
            --header "Authorization: Basic $TOKEN_SONAR_BASE64" | jq -r ".projectStatus.status")
         done
         
-        if [[ "$status" != "SUCCESS" ]]; then
+        if [[ "$status" != "OK" ]]; then
           echo "SonarCloud Quality Gate failed"
           exit 1
         fi
