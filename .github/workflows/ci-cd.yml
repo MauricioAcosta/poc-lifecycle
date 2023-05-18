@@ -170,7 +170,8 @@ jobs:
       - name: Build source code
         run: |
           npm ci --only=prod
-          zip -r ${ZIP_FILE_NAME} ./* -x *.zip
+          cp lambda/index.js index.js
+          zip -r ${ZIP_FILE_NAME} build node_modules static index.js package.json 
           ls
 
       - name: Deploy Lambda function
