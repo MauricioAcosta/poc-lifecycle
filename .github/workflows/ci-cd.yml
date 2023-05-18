@@ -129,16 +129,20 @@ jobs:
 
     - name: Run Tests with Coverage
       run: npm run coverage:report
+    - name: Establecer rama de Long-lived Branches para SonarCloud
+      run: |
+          CURRENT_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
+          if [ "$CURRENT_BRANCH" != "master" ] && [ "$CURRENT_BRANCH" != "laboratorio" ] && [ "$CURRENT_BRANCH" != "integracion" ]
+          then
+            CURRENT_BRANCH="integracion"
+          fi
+          echo "##[set-env name=SONAR_BRANCH_NAME]integracion"
+          echo "Sonar Branch report => " ${CURRENT_BRANCH}
     - name: SonarCloud Scan
       uses: sonarSource/sonarcloud-github-action@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      if: |
-          github.ref == 'refs/heads/master' ||
-          github.ref == 'refs/heads/stage' ||
-          github.ref == 'refs/heads/develop' ||
-          startsWith(github.ref, 'refs/heads/feature/')      
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    
       with:
         projectBaseDir: '.'
     - name: Wait for SonarCloud Quality Gate
