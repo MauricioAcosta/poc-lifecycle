@@ -3,7 +3,6 @@ import express from 'express';
 import actuator from 'express-actuator';
 import logger from 'morgan';
 import path from 'path';
-import config from './config';
 import exampleController from './controllers/example.controller';
 
 const app = express();
