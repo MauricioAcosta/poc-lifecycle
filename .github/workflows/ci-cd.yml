@@ -128,7 +128,7 @@ jobs:
       run: npm run coverage
 
     - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@3.2.0
+      uses: sonarsource/sonarcloud-github-action@master
       with:
         projectBaseDir: './'
         extraProperties: |
