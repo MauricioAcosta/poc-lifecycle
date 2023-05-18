@@ -5,17 +5,14 @@ import exampleService from '../services/example.service';
 const exampleController = Router();
 
 const endpoint = '/';
-exampleController.get(
-  endpoint,
-  async (request: Request, response: Response) => {
-    try {
-      const UUID = uuid();
-      const message = await exampleService.helloWorld(UUID);
-      response.status(200).send({ message });
-    } catch (error) {
-      response.status(500).send(error);
-    }
-  },
-);
+exampleController.get(endpoint, (request: Request, response: Response) => {
+  try {
+    const UUID = uuid();
+    const message = exampleService.helloWorld(UUID);
+    response.status(200).send({ message });
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
 
 export default exampleController;
