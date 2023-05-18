@@ -25,7 +25,8 @@
     "coverage:report": "nyc report --reporter=lcov --reporter=text",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "lint:fix": "npm run lint -- --fix",
-    "clean": "rm -rf .nyc_output coverage build .scannerwork performance/*.clinic-doctor*"
+    "clean": "rm -rf .nyc_output coverage build .scannerwork performance/*.clinic-doctor*",
+    "sonar-scanner": "sonar-scanner"
   },
   "dependencies": {
     "aws-sdk": "^2.1379.0",
@@ -60,7 +61,7 @@
     "nyc": "^15.1.0",
     "prettier": "^2.8.8",
     "sinon": "^15.0.4",
-    "sonarqube-scanner": "^3.0.1",
+    "sonar-scanner": "^3.1.0",
     "ts-loader": "^9.4.2",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
