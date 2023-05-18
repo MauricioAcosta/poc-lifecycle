@@ -181,6 +181,7 @@ jobs:
       - name: Build source code
         run: |
           npm ci
+          npm run build
           cp lambda/index.js index.js
           zip -r ${ZIP_FILE_NAME} build node_modules static index.js package.json 
           ls
