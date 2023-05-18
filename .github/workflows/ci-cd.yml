@@ -131,14 +131,15 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_PROJECT_KEY: MauricioAcosta_poc-lifecycle
+        SONAR_ORGANIZATION: mauricioacosta
+        SONAR_HOST_URL: https://sonarcloud.io        
       if: |
         github.ref == 'refs/heads/develop' ||
         github.ref == 'refs/heads/master' ||
         github.ref == 'refs/heads/stage' ||
         startsWith(github.ref, 'refs/heads/feature/')
-      with:
-        organization: mauricioacosta
-        projectKey: MauricioAcosta_poc-lifecycle
 
   deploy-develop:
     runs-on: ubuntu-20.04
