@@ -1,0 +1,201 @@
+name: ci-cd
+
+on:
+  push:
+    branches: [develop, stage, master, feature/*]
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  LAMBDA_FUNCTION_NAME: poc
+  ZIP_FILE_NAME: poc-lifecycle-develop.zip
+  CACHE_NAME: poc-lifecycle-develop-cache
+
+jobs:
+
+  install-prod-dependencies:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Restore or save cache for prod Dependencies
+        uses: actions/cache@v3
+        env:
+          cache-name: npm-node-modules-prod
+        with:
+          path: node_modules
+          key: npm-${{ env.CACHE_NAME }}-${{ hashFiles('**/package.json') }}-prod
+      - name: Install Dependencies
+        run: |
+          if [ -d "node_modules" ]; then
+            echo 'Dependencies already exists!'
+          else
+            npm ci --only=prod
+          fi
+
+  install-dev-dependencies:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Restore or save cache for dev Dependencies
+        uses: actions/cache@v3
+        env:
+          cache-name: npm-node-modules-dev
+        with:
+          path: node_modules
+          key: npm-${{ env.CACHE_NAME }}-${{ hashFiles('**/package.json') }}-dev
+      - name: Install Dependencies
+        run: |
+          if [ -d "node_modules" ]; then
+            echo 'Dependencies already exists!'
+          else
+            npm ci
+          fi
+  build:
+    runs-on: ubuntu-20.04
+    needs: install-dev-dependencies
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Restore or save cache for dev Dependencies
+        uses: actions/cache@v3
+        env:
+          cache-name: npm-node-modules-dev
+        with:
+          path: node_modules
+          key: npm-${{ env.CACHE_NAME }}-${{ hashFiles('**/package.json') }}-dev
+      - name: Install Dependencies
+        run: |
+          npm run build
+      - name: Persist Data
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build
+
+  test:
+    runs-on: ubuntu-20.04
+    needs: install-dev-dependencies
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Restore or save cache for dev Dependencies
+        uses: actions/cache@v3
+        env:
+          cache-name: npm-node-modules-dev
+        with:
+          path: node_modules
+          key: npm-${{ env.CACHE_NAME }}-${{ hashFiles('**/package.json') }}-dev
+      - name: Running Linter
+        run: npm run lint
+      - name: Running Test
+        run: |
+          npm run coverage && npm run coverage:report
+      - name: Persist Data
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: coverage
+
+  sonarcloud:    
+    runs-on: ubuntu-20.04
+    needs: [test, build]
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Run Tests with Coverage
+      run: npm run coverage:report
+    - name: SonarCloud Scan
+      uses: sonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      if: |
+          github.ref == 'refs/heads/master' ||
+          github.ref == 'refs/heads/stage' ||
+          github.ref == 'refs/heads/develop' ||
+          startsWith(github.ref, 'refs/heads/feature/')
+
+  deploy-develop:
+    runs-on: ubuntu-20.04
+    if: (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/master')
+    needs: [install-prod-dependencies, sonarcloud]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Restore Data
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: build
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Restore or save cache for prod Dependencies
+        uses: actions/cache@v3
+        env:
+          cache-name: npm-node-modules-prod
+        with:
+          path: node_modules
+          key: npm-${{ env.CACHE_NAME }}-${{ hashFiles('**/package.json') }}-prod
+      - run: ls
+      - name: Prepare files
+        shell: bash
+        id: Prepare-files
+        run: |
+          cp lambda/index.js index.js
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install awscli
+
+      - name: Configure AWS credentials
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }} && aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }} && aws configure set default.region ${AWS_REGION}
+
+      - name: Build source code
+        run: |
+          npm ci
+          npm run build
+          cp lambda/index.js index.js
+          zip -r ${ZIP_FILE_NAME} build node_modules static index.js package.json 
+          ls
+
+      - name: Deploy Lambda function
+        run: |
+            aws lambda update-function-code \
+            --function-name ${LAMBDA_FUNCTION_NAME} \
+            --zip-file fileb://${ZIP_FILE_NAME}
+
+      - name: Clean up
+        run: |
+          rm ${ZIP_FILE_NAME}
+          ls
