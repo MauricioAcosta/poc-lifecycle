@@ -15,8 +15,8 @@
   "license": "GPL-3.0-or-later",
   "scripts": {
     "build": "tsc",
-    "build:dev": "tsc",
-    "build:stage": "tsc",
+    "build:integracion": "tsc",
+    "build:laboratorio": "tsc",
     "build:prod": "tsc",
     "start": "npm run build && node ./build/bin/www.js",
     "dev": "nodemon --watch src -e ts,js --exec npm start",
