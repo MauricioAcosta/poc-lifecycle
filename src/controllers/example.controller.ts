@@ -10,7 +10,7 @@ exampleController.get(
     try {
       const UUID = uuid();
       const message = await exampleService.helloWork(UUID);
-      response.status(200).send(message);
+      response.status(200).send({ message });
     } catch (error) {
       response.status(500).send(error);
     }
