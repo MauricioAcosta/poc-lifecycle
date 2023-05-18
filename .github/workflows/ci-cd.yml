@@ -114,17 +114,12 @@ jobs:
 
   sonarcloud:    
     runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Use Node.js ${{ matrix.node-version }}
+    - uses: actions/checkout@v2
+    - name: Use Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 18.x
 
     - name: Install Dependencies
       run: npm install
@@ -133,11 +128,13 @@ jobs:
       run: npm run coverage
 
     - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
+      uses: sonarsource/sonarcloud-github-action@v1
       with:
-        organization: mauricioacosta
-        projectKey: MauricioAcosta_poc-lifecycle
-        token: ${{ secrets.SONAR_TOKEN }}
+        projectBaseDir: './'
+        extraProperties: |
+          sonar.organization=mauricioacosta
+          sonar.projectKey=MauricioAcosta_poc-lifecycle
+          sonar.login=${{ secrets.SONAR_TOKEN }}
         if: |
           github.ref == 'refs/heads/develop' ||
           github.ref == 'refs/heads/master' ||
