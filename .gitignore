@@ -27,9 +27,7 @@ coverage
 .nyc_output
 
 # Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
-.grunt
 
-# Bower dependency directory (https://bower.io/)
 bower_components
 
 # node-waf configuration
@@ -42,6 +40,8 @@ build/Release
 node_modules/
 jspm_packages/
 
+# TypeScript v1 declaration files
+typings/
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
@@ -72,6 +72,30 @@ web_modules/
 # Yarn Integrity file
 .yarn-integrity
 
+# dotenv environment variables file
+# .env
+
+# next.js build output
+.next
+
+# .idea directory
+.idea/
+
+# Typecript TSC
+build
+build*
+
+# sonar scanner
+.scannerwork/
+
+# mac
+.DS_Store
+
+#.vscode/*
+
+.env
+
+env-example.sh
 # dotenv environment variable files
 .env
 .env.development.local
