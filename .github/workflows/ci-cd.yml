@@ -137,7 +137,7 @@ jobs:
           then
             CURRENT_BRANCH="integracion"
           fi
-          echo "integracion" >> $GITHUB_ENV
+          echo "SONAR_BRANCH_NAME=integracion" >> $GITHUB_ENV
           echo "Sonar Branch report => " ${CURRENT_BRANCH}
     - name: Mostrar rama de Long-lived Branches
       run: echo "Rama de Long-lived Branches ${{ steps.branch-check.outputs.stdout }}"
