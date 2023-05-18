@@ -127,21 +127,10 @@ jobs:
     - name: Run Tests with Coverage
       run: npm run coverage
     - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
+      uses: SonarSource/sonarcloud-github-action@master
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_PROJECT_KEY: MauricioAcosta_poc-lifecycle
-        SONAR_ORGANIZATION: mauricioacosta
-        SONAR_HOST_URL: https://sonarcloud.io        
-      if: |
-        github.ref == 'refs/heads/develop' ||
-        github.ref == 'refs/heads/master' ||
-        github.ref == 'refs/heads/stage' ||
-        startsWith(github.ref, 'refs/heads/feature/')
-      with:
-        organization: mauricioacosta
-        projectKey: MauricioAcosta_poc-lifecycle
 
   deploy-develop:
     runs-on: ubuntu-20.04
