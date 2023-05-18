@@ -139,6 +139,11 @@ jobs:
           github.ref == 'refs/heads/stage' ||
           github.ref == 'refs/heads/develop' ||
           startsWith(github.ref, 'refs/heads/feature/')
+    - name: SonarCloud Quality Gate
+      uses: sonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}          
       with:
         projectBaseDir: '.'
         waitForQualityGate: 'true'
