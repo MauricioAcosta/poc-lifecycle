@@ -140,6 +140,7 @@ jobs:
           github.ref == 'refs/heads/develop' ||
           startsWith(github.ref, 'refs/heads/feature/')
       with:
+        projectBaseDir: '.'
         waitForQualityGate: 'true'
 
   deploy-develop:
