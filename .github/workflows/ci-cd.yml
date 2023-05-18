@@ -114,6 +114,7 @@ jobs:
 
   sonarcloud:    
     runs-on: ubuntu-20.04
+    needs: [test, build]
     steps:
     - uses: actions/checkout@v3
       with:
@@ -134,14 +135,14 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       if: |
-          github.ref == 'refs/heads/develop' ||
           github.ref == 'refs/heads/master' ||
           github.ref == 'refs/heads/stage' ||
+          github.ref == 'refs/heads/develop' ||
           startsWith(github.ref, 'refs/heads/feature/')
 
   deploy-develop:
     runs-on: ubuntu-20.04
-    if: github.ref == 'refs/heads/develop' || contains(github.ref, 'feature')
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/master')
     needs: [install-prod-dependencies, sonarcloud]
     steps:
       - uses: actions/checkout@v3
