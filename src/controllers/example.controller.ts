@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { uuid } from 'uuidv4';
 import exampleService from '../services/example.service';
-import config from "../config"; 
+import config from '../config';
 
 const exampleController = Router();
 
