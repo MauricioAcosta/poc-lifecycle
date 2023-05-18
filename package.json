@@ -26,7 +26,7 @@
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "lint:fix": "npm run lint -- --fix",
     "clean": "rm -rf .nyc_output coverage build .scannerwork performance/*.clinic-doctor*",
-    "sonar-scanner": "sonar-scanner"
+    "sonar-scanner": "sonar-scanner -Dsonar.projectKey=MauricioAcosta_poc-lifecycle -Dsonar.organization=mauricioacosta"
   },
   "dependencies": {
     "aws-sdk": "^2.1379.0",
