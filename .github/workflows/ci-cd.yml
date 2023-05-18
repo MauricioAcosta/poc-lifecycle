@@ -112,30 +112,37 @@ jobs:
           name: coverage
           path: coverage
 
-  sonarcloud:
-    name: SonarCloud
-    needs: [test, build]
-    runs-on: ubuntu-latest
+  sonarcloud:    
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        node-version: [18.x]
+
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Current Branch
-        shell: bash
-        id: long-lived-branch
-        run: |
-          CURRENT_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
-          if [ "$CURRENT_BRANCH" != "master" ] && [ "$CURRENT_BRANCH" != "stage" ] && [ "$CURRENT_BRANCH" != "develop" ]
-          then
-            CURRENT_BRANCH="develop"
-          fi
-          echo "##[set-output name=branch;]$(echo ${CURRENT_BRANCH})"
-          echo "Sonar Branch report => " ${CURRENT_BRANCH}
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Run Tests with Coverage
+      run: npm run coverage
+
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      with:
+        organization: mauricioacosta
+        projectKey: MauricioAcosta_poc-lifecycle
+        token: ${{ secrets.SONAR_TOKEN }}
+        if: |
+          github.ref == 'refs/heads/develop' ||
+          github.ref == 'refs/heads/master' ||
+          github.ref == 'refs/heads/stage' ||
+          startsWith(github.ref, 'refs/heads/feature/')
 
   deploy-develop:
     runs-on: ubuntu-20.04
