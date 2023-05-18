@@ -7,8 +7,6 @@ import config from './config';
 import exampleController from './controllers/example.controller';
 
 const app = express();
-const apiPath = config.API_PATH;
-const fullApiPath = `${apiPath}/V1`;
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -29,6 +27,6 @@ app.use(
   }),
 );
 
-app.use(fullApiPath, exampleController);
+app.use('', exampleController);
 
 export default app;
