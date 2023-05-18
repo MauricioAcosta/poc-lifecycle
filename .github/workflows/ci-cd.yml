@@ -114,7 +114,7 @@ jobs:
 
   sonarcloud:    
     runs-on: ubuntu-20.04
-    needs: [test, build]
+    # needs: [test, build]
     steps:
     - uses: actions/checkout@v3
       with:

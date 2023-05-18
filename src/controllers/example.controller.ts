@@ -1,5 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { uuid } from 'uuidv4';
+import config from '../config';
 import exampleService from '../services/example.service';
 
 const exampleController = Router();
